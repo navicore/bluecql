@@ -8,3 +8,8 @@ A tool to generate a Scala [spray-io](http://spray.io/) server with a ready-to-r
 ## STATUS
 
 *UNDER CONSTRUCTION*
+*UNDER CONSTRUCTION*
+*UNDER CONSTRUCTION*
+*UNDER CONSTRUCTION*
+*UNDER CONSTRUCTION*
+*UNDER CONSTRUCTION*
