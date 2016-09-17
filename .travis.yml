@@ -1,16 +1,4 @@
 language: scala
-
-# whitelist
-branches:
-  only:
-  - master
-  - /^v.*$/
-
 scala:
-- 2.10.6
-jdk:
-- openjdk8
-script:
-- sbt compile test
-sudo: false
-
+   - 2.10.6
+   - 2.11.4
