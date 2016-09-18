@@ -16,23 +16,24 @@
 
 package onextent.bluecql
 
-import java.io.File
+import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-import org.apache.log4j.BasicConfigurator
-import org.rogach.scallop.ScallopConf
-import org.slf4j.LoggerFactory
+object TableCode {
 
-object Main extends App {
+  def apply(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
+    val code =
+s"""
+package $pkg
 
-  BasicConfigurator.configure()
-  val logger = LoggerFactory.getLogger(Main.getClass.getName)
+import scala.concurrent.Future
+import com.websudos.phantom.dsl._
 
-  object Args extends ScallopConf(args) {
-    val file = opt[String]("file", descr = "CQL input file", required = true)
-    val pkg = opt[String]("package", descr = "the name of the Scala package to generate", required = true)
+class ${stmt.columnFamily()} extends CassandraTable[deviceinfo, Device] {
+
+}
+
+""".stripMargin
+    code
   }
-  Args.verify()
-
-  Cql.process(Args.file(), Args.pkg())
 }
 

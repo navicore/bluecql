@@ -16,15 +16,45 @@
 
 package onextent.bluecql
 
-import org.antlr.runtime.{ANTLRFileStream, CommonTokenStream}
-import org.apache.cassandra.cql3.statements.ParsedStatement
-import org.apache.cassandra.cql3.{CqlLexer, CqlParser}
+import java.io.{File, PrintWriter}
+
+import org.apache.cassandra.cql3.statements.{CFPropDefs, CreateTableStatement}
 
 object Cql {
 
-  def process(filepath: String): Unit = {
-    val ks = Statements.keyspaces(filepath).next()
-    println("ejs " + ks.keyspace())
+  def pkgdir(pkg: String): String = {
+    val regex = "\\.".r
+    val pkgpath = regex.replaceAllIn(pkg, "/")
+    val pkgdir = s"out/src/main/scala/${pkgpath}"
+    new File(s"${pkgdir}").mkdirs()
+    pkgdir
+  }
+
+  def mkTableCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
+    for (stmt <- statements) {
+      val dbfile = s"${pdir}/${stmt.columnFamily()}.scala"
+      val code = TableCode(pkg, stmt)
+      new PrintWriter(dbfile) { write(s"$code\n"); close }
+    }
+  }
+  def mkDbCode(ks: String, statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
+    val dbfile = s"${pdir}/Db.scala"
+    val code = DbCode(ks, pkg, statements)
+    new PrintWriter(dbfile) { write(s"$code\n"); close }
+  }
+
+  def mkCaseCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
+    val dbfile = s"${pdir}/DbData.scala"
+    new PrintWriter(dbfile) { write("db data file contents\n"); close }
+  }
+
+  def process(filepath: String, pkg: String): Unit = {
+
+    var ks = Statements.keyspaces(filepath).next().keyspace()
+    var pdir = pkgdir(pkg)
+    mkDbCode(ks, Statements.tables(filepath), pkg, pdir)
+    mkCaseCode(Statements.tables(filepath), pkg, pdir)
+    mkTableCode(Statements.tables(filepath), pkg, pdir)
   }
 }
 
