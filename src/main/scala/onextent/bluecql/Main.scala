@@ -18,6 +18,7 @@ package onextent.bluecql
 
 import java.io.File
 
+import onextent.bluecql.gen.CodeGenerator
 import org.apache.log4j.BasicConfigurator
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
@@ -33,6 +34,6 @@ object Main extends App {
   }
   Args.verify()
 
-  Cql.process(Args.file(), Args.pkg())
+  CodeGenerator(Args.file(), Args.pkg())
 }
 

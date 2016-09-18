@@ -14,13 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package onextent.bluecql
+package onextent.bluecql.gen
 
 import java.io.{File, PrintWriter}
 
-import org.apache.cassandra.cql3.statements.{CFPropDefs, CreateTableStatement}
+import onextent.bluecql.cql.Statements
+import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object Cql {
+object CodeGenerator {
 
   def pkgdir(pkg: String): String = {
     val regex = "\\.".r
@@ -48,7 +49,7 @@ object Cql {
     new PrintWriter(dbfile) { write("db data file contents\n"); close }
   }
 
-  def process(filepath: String, pkg: String): Unit = {
+  def apply(filepath: String, pkg: String): Unit = {
 
     var ks = Statements.keyspaces(filepath).next().keyspace()
     var pdir = pkgdir(pkg)

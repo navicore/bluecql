@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package onextent.bluecql
+package onextent.bluecql.cql
 
 import org.antlr.runtime.{ANTLRFileStream, CommonTokenStream}
-import org.apache.cassandra.cql3.{CqlLexer, CqlParser}
 import org.apache.cassandra.cql3.statements.{CreateKeyspaceStatement, CreateTableStatement, CreateTypeStatement, ParsedStatement}
+import org.apache.cassandra.cql3.{CqlLexer, CqlParser}
 
 class Statements(filepath: String) extends Iterator[ParsedStatement] {
   private val fileStream = new ANTLRFileStream(filepath, "utf8")
@@ -35,20 +35,20 @@ class Statements(filepath: String) extends Iterator[ParsedStatement] {
 }
 
 object Statements {
-  private def statement(filepath: String, classname: String): Iterator[ParsedStatement] = {
+  def apply(filepath: String, classname: String): Iterator[ParsedStatement] = {
     for {
       stmt <- new Statements(filepath)
       if stmt.getClass().getName.matches(s".*$classname")
     }  yield stmt
   }
   def keyspaces(filepath: String): Iterator[CreateKeyspaceStatement] = {
-    statement(filepath, "CreateKeyspaceStatement").map(t => t.asInstanceOf[CreateKeyspaceStatement])
+    apply(filepath, "CreateKeyspaceStatement").map(t => t.asInstanceOf[CreateKeyspaceStatement])
   }
   def types(filepath: String): Iterator[CreateTypeStatement] = {
-    statement(filepath, "CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
+    apply(filepath, "CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
   }
   def tables(filepath: String): Iterator[CreateTableStatement.RawStatement] = {
-    statement(filepath, "CreateTableStatement\\$RawStatement").map(t => t.asInstanceOf[CreateTableStatement.RawStatement])
+    apply(filepath, "CreateTableStatement\\$RawStatement").map(t => t.asInstanceOf[CreateTableStatement.RawStatement])
   }
 }
 
