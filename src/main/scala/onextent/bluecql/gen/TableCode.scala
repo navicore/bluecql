@@ -43,7 +43,8 @@ class Db${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${
   //todo: iterate over stmt for values
 
   def fromRow(row: Row): ${cname} = {
-    ${cname}("abc123")
+    ${cname}(id(row))
+    //todo: iterate over stmt for values
   }
 }
 
