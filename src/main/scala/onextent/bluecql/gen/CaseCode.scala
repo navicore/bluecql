@@ -14,17 +14,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package onextent.bluecql
+package onextent.bluecql.gen
 
-import org.antlr.runtime.{ANTLRFileStream, CommonTokenStream}
-import org.apache.cassandra.cql3.statements.ParsedStatement
-import org.apache.cassandra.cql3.{CqlLexer, CqlParser}
+import java.io.PrintWriter
 
-object Cql {
+import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-  def process(filepath: String): Unit = {
-    val ks = Statements.keyspaces(filepath).next()
-    println("ejs " + ks.keyspace())
+object CaseCode extends CodeGenerator {
+
+  def apply(pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+    var cases = ""
+    for (stmt <- statements) {
+      val cname = caseName(stmt.columnFamily())
+      cases = cases +
+s"""case class ${cname}(id:String) extends DbData
+""".stripMargin + "\n"
+    }
+    val code =
+      s"""package $pkg
+
+sealed abstract class DbData
+
+${cases}""".stripMargin
+
+    val file = s"${pdir}/DbData.scala"
+    new PrintWriter(file) { write(s"$code"); close }
+
   }
 }
-

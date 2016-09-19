@@ -16,6 +16,9 @@
 
 package onextent.bluecql
 
+import java.io.File
+
+import onextent.bluecql.gen.CodeGenerator
 import org.apache.log4j.BasicConfigurator
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
@@ -27,11 +30,10 @@ object Main extends App {
 
   object Args extends ScallopConf(args) {
     val file = opt[String]("file", descr = "CQL input file", required = true)
+    val pkg = opt[String]("package", descr = "the name of the Scala package to generate", required = true)
   }
   Args.verify()
 
-  logger.info(s"process ${Args.file()}")
-
-  Cql.process(Args.file())
+  CodeGenerator(Args.file(), Args.pkg())
 }
 

@@ -16,6 +16,7 @@
 
 package onextent.bluecql
 
+import onextent.bluecql.cql.Statements
 import org.apache.cassandra.cql3.statements.{CreateKeyspaceStatement, CreateTableStatement, CreateTypeStatement}
 import org.scalatest.FlatSpec
 
