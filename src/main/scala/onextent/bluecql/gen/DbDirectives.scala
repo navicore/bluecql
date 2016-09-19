@@ -20,50 +20,27 @@ import java.io.PrintWriter
 
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object RouterCode extends CodeGenerator {
+object DbDirectives extends CodeGenerator {
 
   def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
-    var routes = ""
-    for (stmt <- statements) {
-      val tname = stmt.columnFamily()
-      val cname = caseName(tname)
-      routes = routes +
-s"""
-          path("${tname}" / Segment) { (id) =>
-            complete("ok")
-          } ~
-          path("${tname}") {
-            complete("ok")
-          } ~
-""".stripMargin
-      routes = routes.substring(0, routes.length() - 2) // chomp last ~
-    }
     val code =
       s"""package $pkg
 
-import akka.actor.Actor
-import spray.http.MediaTypes
 import spray.routing._
+import spray.json._
+import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+import scala.io.Source
+import scala.util.{Failure, Success}
 
-class ServiceActor() extends Actor with Route {
-  def actorRefFactory = context
-  def receive = runRoute(route)
-}
+trait DbDirectives extends HttpService {
 
-trait Route extends HttpService with DbDirectives {
-  val route = {
-    pathPrefix(s"$keyspace") {
-      respondWithMediaType(MediaTypes.`application/json`) {
-        get {${routes}
-        }
-      }
-    }
-  }
 }
 
 """.stripMargin
 
-    val file = s"${pdir}/ServiceActor.scala"
+    val file = s"${pdir}/DbDirectives.scala"
     new PrintWriter(file) { write(s"$code"); close }
 
   }

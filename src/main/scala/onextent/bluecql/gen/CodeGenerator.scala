@@ -41,11 +41,12 @@ object CodeGenerator {
 
     var ks = Statements.keyspaces(filepath).next().keyspace()
     var pdir = pkgdir(pkg)
-    SbtCode(ks, pkg)
     CaseCode(pkg, Statements.tables(filepath), pdir)
-    CaseCode(pkg, Statements.tables(filepath), pdir)
-    TableCode(Statements.tables(filepath), pkg, pdir)
     DbCode(ks, Statements.tables(filepath), pkg, pdir)
+    DbDirectives(ks, pkg, Statements.tables(filepath), pdir)
+    RouterCode(ks, pkg, Statements.tables(filepath), pdir)
+    SbtCode(ks, pkg)
+    TableCode(Statements.tables(filepath), pkg, pdir)
   }
 }
 
