@@ -37,19 +37,6 @@ object CodeGenerator {
     pkgdir
   }
 
-  def mkTableCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
-    for (stmt <- statements) {
-      val file = s"${pdir}/Db${stmt.columnFamily()}.scala"
-      val code = TableCode(pkg, stmt)
-      new PrintWriter(file) { write(s"$code\n"); close }
-    }
-  }
-  def mkDbCode(ks: String, statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
-    val file = s"${pdir}/Db.scala"
-    val code = DbCode(ks, pkg, statements)
-    new PrintWriter(file) { write(s"$code\n"); close }
-  }
-
   def apply(filepath: String, pkg: String): Unit = {
 
     var ks = Statements.keyspaces(filepath).next().keyspace()
@@ -57,8 +44,8 @@ object CodeGenerator {
     SbtCode(ks, pkg)
     CaseCode(pkg, Statements.tables(filepath), pdir)
     CaseCode(pkg, Statements.tables(filepath), pdir)
-    mkDbCode(ks, Statements.tables(filepath), pkg, pdir)
-    mkTableCode(Statements.tables(filepath), pkg, pdir)
+    TableCode(Statements.tables(filepath), pkg, pdir)
+    DbCode(ks, Statements.tables(filepath), pkg, pdir)
   }
 }
 

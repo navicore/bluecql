@@ -16,12 +16,16 @@
 
 package onextent.bluecql.gen
 
+import java.io.PrintWriter
+
 import org.apache.cassandra.cql3.statements.CreateTableStatement
+import org.apache.cassandra.db.Keyspace
 
 object DbCode {
 
-  def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement]): String = {
+  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
 
+    val file = s"${pdir}/Db.scala"
     var objCode = ""
 
     for (stmt <- statements) {
@@ -51,7 +55,7 @@ class Db(val keyspace: KeySpaceDef) extends Database(keyspace) {
 object Db extends Db(Defaults.connector)
 
 """.stripMargin
-    code
+    new PrintWriter(file) { write(s"$code\n"); close }
   }
 }
 

@@ -16,11 +16,20 @@
 
 package onextent.bluecql.gen
 
+import java.io.PrintWriter
+
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
 object TableCode extends CodeGenerator {
 
-  def apply(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
+  def apply(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
+    for (stmt <- statements) {
+      val file = s"${pdir}/Db${stmt.columnFamily()}.scala"
+      val code = applyStmt(pkg, stmt)
+      new PrintWriter(file) { write(s"$code\n"); close }
+    }
+  }
+  def applyStmt(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
     val tname = stmt.columnFamily()
     val cname = caseName(tname)
     val code =s"""package $pkg
@@ -31,6 +40,7 @@ import com.websudos.phantom.dsl._
 class Db${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${cname}] {
 
   object id extends StringColumn(this) with PartitionKey[String]
+  //todo: iterate over stmt for values
 
   def fromRow(row: Row): ${cname} = {
     ${cname}("abc123")
