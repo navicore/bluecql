@@ -39,7 +39,7 @@ object CodeGenerator {
 
   def mkTableCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
     for (stmt <- statements) {
-      val file = s"${pdir}/${stmt.columnFamily()}.scala"
+      val file = s"${pdir}/Db${stmt.columnFamily()}.scala"
       val code = TableCode(pkg, stmt)
       new PrintWriter(file) { write(s"$code\n"); close }
     }

@@ -20,22 +20,53 @@ import java.io.PrintWriter
 
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object CaseCode extends CodeGenerator {
+object RouterCode extends CodeGenerator {
 
-  def apply(pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
-    var cases = ""
+  def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+    var routes = ""
     for (stmt <- statements) {
-      val cname = caseName(stmt.columnFamily())
-      cases = cases +
-s"""case class ${cname}(id:String) extends DbData
-""".stripMargin + "\n"
+      val tname = stmt.columnFamily()
+      val cname = caseName(tname)
+      routes = routes +
+s"""
+path("${tname}" / Segment) { (id) =>
+  //get${cname}(id) {
+    complete(_)
+  //}
+} ~
+path("${tname}") {
+  //get${cname}() {
+    complete(_)
+  //}
+} ~
+
+""".stripMargin
     }
     val code =
       s"""package $pkg
 
-sealed abstract class DbData
+import akka.actor.Actor
+import spray.http.MediaTypes
+import spray.routing._
 
-${cases}""".stripMargin
+class ServiceActor() extends Actor with Route {
+  def actorRefFactory = context
+  def receive = runRoute(route)
+}
+
+trait Route extends HttpService with DbDirectives {
+  val route = {
+    pathPrefix(s"$keyspace") {
+      respondWithMediaType(MediaTypes.`application/json`) {
+        get {
+${routes}
+        }
+      }
+    }
+  }
+}
+
+""".stripMargin
 
     val file = s"${pdir}/DbData.scala"
     new PrintWriter(file) { write(s"$code"); close }

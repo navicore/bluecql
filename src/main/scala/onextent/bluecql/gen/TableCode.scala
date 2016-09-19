@@ -21,16 +21,28 @@ import org.apache.cassandra.cql3.statements.CreateTableStatement
 object TableCode extends CodeGenerator {
 
   def apply(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
-    val cname = caseName(stmt.columnFamily())
+    val tname = stmt.columnFamily()
+    val cname = caseName(tname)
     val code =s"""package $pkg
 
 import scala.concurrent.Future
 import com.websudos.phantom.dsl._
 
-class ${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${cname}] {
+class Db${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${cname}] {
+
+  object id extends StringColumn(this) with PartitionKey[String]
 
   def fromRow(row: Row): ${cname} = {
-    ${cname}()
+    ${cname}("abc123")
+  }
+}
+
+abstract class ${tname} extends Db${stmt.columnFamily()} with RootConnector {
+  def getById(id: String): Future[Option[${cname}]] = {
+    select.where(_.id eqs id).one()
+  }
+  def getAll(): Future[List[${cname}]] = {
+    select.fetch()
   }
 }
 
