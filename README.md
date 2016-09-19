@@ -21,3 +21,7 @@ A tool to generate a Scala [spray-io](http://spray.io/) server with a ready-to-r
 
 *UNDER CONSTRUCTION*
 
+```
+sbt "run-main onextent.bluecql.Main --file tmp/iot.cql --package onextent.my.iot" && cd out && sbt test && cd ..
+```
+
