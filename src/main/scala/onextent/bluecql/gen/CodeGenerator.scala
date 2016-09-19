@@ -21,6 +21,12 @@ import java.io.{File, PrintWriter}
 import onextent.bluecql.cql.Statements
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
+trait CodeGenerator {
+  def caseName(name: String): String = {
+    Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Data"
+  }
+}
+
 object CodeGenerator {
 
   def pkgdir(pkg: String): String = {
@@ -33,28 +39,25 @@ object CodeGenerator {
 
   def mkTableCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
     for (stmt <- statements) {
-      val dbfile = s"${pdir}/${stmt.columnFamily()}.scala"
+      val file = s"${pdir}/${stmt.columnFamily()}.scala"
       val code = TableCode(pkg, stmt)
-      new PrintWriter(dbfile) { write(s"$code\n"); close }
+      new PrintWriter(file) { write(s"$code\n"); close }
     }
   }
   def mkDbCode(ks: String, statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
-    val dbfile = s"${pdir}/Db.scala"
+    val file = s"${pdir}/Db.scala"
     val code = DbCode(ks, pkg, statements)
-    new PrintWriter(dbfile) { write(s"$code\n"); close }
-  }
-
-  def mkCaseCode(statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
-    val dbfile = s"${pdir}/DbData.scala"
-    new PrintWriter(dbfile) { write("db data file contents\n"); close }
+    new PrintWriter(file) { write(s"$code\n"); close }
   }
 
   def apply(filepath: String, pkg: String): Unit = {
 
     var ks = Statements.keyspaces(filepath).next().keyspace()
     var pdir = pkgdir(pkg)
+    SbtCode(ks, pkg)
+    CaseCode(pkg, Statements.tables(filepath), pdir)
+    CaseCode(pkg, Statements.tables(filepath), pdir)
     mkDbCode(ks, Statements.tables(filepath), pkg, pdir)
-    mkCaseCode(Statements.tables(filepath), pkg, pdir)
     mkTableCode(Statements.tables(filepath), pkg, pdir)
   }
 }

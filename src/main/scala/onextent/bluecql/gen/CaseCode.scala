@@ -16,42 +16,32 @@
 
 package onextent.bluecql.gen
 
+import java.io.PrintWriter
+
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object DbCode {
+object CaseCode extends CodeGenerator {
 
-  def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement]): String = {
-
-    var objCode = ""
-
+  def apply(pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+    var cases = ""
     for (stmt <- statements) {
-      objCode = objCode +
+      val cname = caseName(stmt.columnFamily())
+      cases = cases +
 s"""
-  object ${stmt.columnFamily()} extends ${stmt.columnFamily()} with keyspace.Connector
+  case class ${cname}() extends DbData
 """.stripMargin
     }
-
     val code =
-s"""package $pkg
+      s"""package $pkg
 
-import scala.concurrent.Future
-import com.websudos.phantom.dsl._
+sealed abstract class DbData
 
-object Defaults {
-  val keyspace = sys.env.get("KEYSPACE").getOrElse("$keyspace")
-  val host = sys.env.get("CASSANDRA_HOST").getOrElse("localhost") //todo: get seq
-  val hosts = Seq(host)
-  val connector = ContactPoints(hosts, 9042).keySpace(keyspace)
-}
-
-class Db(val keyspace: KeySpaceDef) extends Database(keyspace) {
-  $objCode
-}
-
-object Db extends Db(Defaults.connector)
+${cases}
 
 """.stripMargin
-    code
+
+    val file = s"${pdir}/DbData.scala"
+    new PrintWriter(file) { write(s"$code"); close }
+
   }
 }
-

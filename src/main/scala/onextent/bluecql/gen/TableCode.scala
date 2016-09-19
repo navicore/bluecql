@@ -18,18 +18,20 @@ package onextent.bluecql.gen
 
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object TableCode {
+object TableCode extends CodeGenerator {
 
   def apply(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
-    val code =
-s"""
-package $pkg
+    val cname = caseName(stmt.columnFamily())
+    val code =s"""package $pkg
 
 import scala.concurrent.Future
 import com.websudos.phantom.dsl._
 
-class ${stmt.columnFamily()} extends CassandraTable[deviceinfo, Device] {
+class ${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${cname}] {
 
+  def fromRow(row: Row): ${cname} = {
+    ${cname}()
+  }
 }
 
 """.stripMargin
