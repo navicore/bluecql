@@ -18,14 +18,34 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object DbDirectives extends CodeGenerator with Config {
+object DbDirectives extends CodeGenerator {
 
   def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
-    val code =
-      s"""package ${property(PACKAGE_PROP)}
+    var accessors = ""
+    for (stmt <- statements) {
+      val tname = stmt.columnFamily()
+      val cname = caseName(tname)
+      accessors = accessors +
+s"""
+  def get${cname}(id: String): Directive1[String] = {
+    import ${cname}JsonProtocol._
+    val f: Future[Option[${cname}]] = Db.${tname}.getById(id)
+    Await.result(f, 10 second) match {
+      case Some(o) => {
+        val json = o.toJson.toString()
+        provide(json)
+      }
+      case _ => {
+        provide("error")
+      }
+    }
+  }
+""".stripMargin
+    }
+
+    val code = s"""package ${property(PACKAGE_PROP)}
 
 import spray.routing._
 import spray.json._
@@ -37,6 +57,8 @@ import scala.util.{Failure, Success}
 
 trait DbDirectives extends HttpService {
 
+  $accessors
+
 }
 
 """.stripMargin
@@ -46,3 +68,4 @@ trait DbDirectives extends HttpService {
 
   }
 }
+

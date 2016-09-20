@@ -18,17 +18,20 @@ package onextent.bluecql.gen
 
 import onextent.bluecql.Config
 import onextent.bluecql.cql.Statements
+import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-trait CodeGenerator {
-  def caseName(name: String): String = {
-    Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Data"
+trait CodeGenerator extends Config {
+
+  def argCnt(stmt: CreateTableStatement.RawStatement): Int = {
+    //todo: count valid args for case classes
+    1
   }
 }
 
 object CodeGenerator extends Config {
   def apply(): Unit = {
     var ks = Statements.keyspaces().next().keyspace()
-    CaseCode(Statements.tables())
+    CaseCode()
     DbCode(ks, Statements.tables())
     DbDirectives(ks, Statements.tables())
     RouterCode(ks, Statements.tables())

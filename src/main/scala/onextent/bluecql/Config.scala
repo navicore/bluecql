@@ -4,6 +4,13 @@ import java.io.File
 
 trait Config {
 
+  def fieldName(name: String): String = {
+    Character.toLowerCase(name.charAt(0)) + name.substring(1)
+  }
+  def caseName(name: String): String = {
+    Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Data"
+  }
+
   def pdir(): String = {
     val regex = "\\.".r
     val pkgpath = regex.replaceAllIn(property(PACKAGE_PROP), "/")

@@ -21,7 +21,7 @@ import java.io.PrintWriter
 import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object MainCode extends CodeGenerator with Config {
+object MainCode extends Config {
 
   def apply(): Unit = {
     val code =
@@ -41,18 +41,17 @@ object Main extends App {
 
   object Args extends ScallopConf(args) {
     // http
+    val svcname = opt[String]("svcname", descr = "ServiceActor name", default = Some("bluecql"))
+    val basepath = opt[String]("basepath", descr = "url path prefix", default = Some("store"))
     val host = opt[String]("host", descr = "ifc to listen on", default = Some("0.0.0.0"))
     val port = opt[Int]("port", descr = "port to listen on", default = Some(8081))
-    val sslport = opt[Int]("ssl-port", descr = "ssl/tls port to listen on", default = Some(8443))
   }
   Args.verify()
 
-  sys.props.put("host", Args.host())
-  sys.props.put("port", Args.port().toString)
-  sys.props.put("sslport", Args.sslport().toString)
+  sys.props.put("basepath", Args.basepath())
 
-  implicit val system = ActorSystem("bluecql-service")
-  val service = system.actorOf(Props(new ServiceActor()), name = "bluecql-service")
+  implicit val system = ActorSystem(Args.svcname())
+  val service = system.actorOf(Props(new ServiceActor()), name = Args.svcname())
 
   IO(Http) ! Http.Bind(service, Args.host(), port = Args.port())
 }

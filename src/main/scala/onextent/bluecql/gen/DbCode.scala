@@ -18,11 +18,9 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
-import org.apache.cassandra.db.Keyspace
 
-object DbCode extends Config {
+object DbCode extends CodeGenerator {
 
   def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
 

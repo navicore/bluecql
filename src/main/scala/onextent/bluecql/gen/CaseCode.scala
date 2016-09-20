@@ -18,25 +18,38 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import onextent.bluecql.Config
-import org.apache.cassandra.cql3.statements.CreateTableStatement
+import onextent.bluecql.cql.Statements
 
-object CaseCode extends CodeGenerator with Config {
+object CaseCode extends CodeGenerator {
 
-  def apply(statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
+  def apply(): Unit = {
     var cases = ""
-    for (stmt <- statements) {
+    for (stmt <- Statements.tables()) {
       val cname = caseName(stmt.columnFamily())
       cases = cases +
 s"""case class ${cname}(id:String) extends DbData
 """.stripMargin + "\n"
     }
+
+    var jproto = ""
+    for (stmt <- Statements.tables()) {
+      val cname = caseName(stmt.columnFamily())
+      jproto = jproto +
+s"""object ${cname}JsonProtocol extends DefaultJsonProtocol {
+    implicit val ${fieldName(cname)} = jsonFormat${argCnt(stmt)}($cname)
+}""".stripMargin + "\n"
+    }
+
     val code =
       s"""package ${property(PACKAGE_PROP)}
 
+import spray.json._
+
 sealed abstract class DbData
 
-${cases}""".stripMargin
+${cases}
+${jproto}
+""".stripMargin
 
     val file = s"${pdir}/DbData.scala"
     new PrintWriter(file) { write(s"$code"); close }

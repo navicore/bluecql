@@ -18,10 +18,9 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object RouterCode extends CodeGenerator with Config {
+object RouterCode extends CodeGenerator {
 
   def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     var routes = ""
@@ -34,9 +33,7 @@ s"""path("${tname}" / Segment) { (id) =>
           } ~
           path("${tname}") {
             complete("ok")
-          } ~
-""".stripMargin
-      routes = routes.substring(0, routes.length() - 1) // chomp lf ~
+          } ~""".stripMargin
     }
     routes = routes.substring(0, routes.length() - 1) // chomp last ~
     val code =
@@ -52,13 +49,19 @@ class ServiceActor() extends Actor with Route {
 }
 
 trait Route extends HttpService with DbDirectives {
+  val pref = sys.props.get("basepath") match {
+    case Some(p) => p
+    case _ => "store"
+  }
   val route = {
+    pathPrefix(pref) {
     pathPrefix("$keyspace") {
       respondWithMediaType(MediaTypes.`application/json`) {
         get {
           ${routes}
         }
       }
+    }
     }
   }
 }

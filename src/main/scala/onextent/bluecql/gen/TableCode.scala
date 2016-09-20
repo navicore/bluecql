@@ -18,10 +18,9 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object TableCode extends CodeGenerator with Config {
+object TableCode extends CodeGenerator {
 
   def apply(statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     for (stmt <- statements) {

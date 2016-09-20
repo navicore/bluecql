@@ -18,10 +18,7 @@ package onextent.bluecql.gen
 
 import java.io.{File, PrintWriter}
 
-import onextent.bluecql.Config
-import org.apache.cassandra.cql3.statements.CreateTableStatement
-
-object SbtCode extends Config {
+object SbtCode extends CodeGenerator {
 
   def apply(keyspace: String): Unit = {
     applySbt(keyspace, property(PACKAGE_PROP))
