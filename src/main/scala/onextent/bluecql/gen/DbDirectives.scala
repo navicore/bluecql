@@ -18,13 +18,14 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object DbDirectives extends CodeGenerator {
+object DbDirectives extends CodeGenerator with Config {
 
-  def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     val code =
-      s"""package $pkg
+      s"""package ${property(PACKAGE_PROP)}
 
 import spray.routing._
 import spray.json._

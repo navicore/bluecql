@@ -18,11 +18,12 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object CaseCode extends CodeGenerator {
+object CaseCode extends CodeGenerator with Config {
 
-  def apply(pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+  def apply(statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     var cases = ""
     for (stmt <- statements) {
       val cname = caseName(stmt.columnFamily())
@@ -31,7 +32,7 @@ s"""case class ${cname}(id:String) extends DbData
 """.stripMargin + "\n"
     }
     val code =
-      s"""package $pkg
+      s"""package ${property(PACKAGE_PROP)}
 
 sealed abstract class DbData
 

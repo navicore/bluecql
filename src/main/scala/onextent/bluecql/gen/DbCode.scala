@@ -18,14 +18,15 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 import org.apache.cassandra.db.Keyspace
 
-object DbCode {
+object DbCode extends Config {
 
-  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement], pkg: String, pdir: String): Unit = {
+  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
 
-    val file = s"${pdir}/Db.scala"
+    val file = s"${pdir()}/Db.scala"
     var objCode = ""
 
     for (stmt <- statements) {
@@ -36,7 +37,7 @@ s"""
     }
 
     val code =
-s"""package $pkg
+s"""package ${property(PACKAGE_PROP)}
 
 import scala.concurrent.Future
 import com.websudos.phantom.dsl._

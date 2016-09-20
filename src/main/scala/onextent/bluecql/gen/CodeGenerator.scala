@@ -16,10 +16,8 @@
 
 package onextent.bluecql.gen
 
-import java.io.{File, PrintWriter}
-
+import onextent.bluecql.Config
 import onextent.bluecql.cql.Statements
-import org.apache.cassandra.cql3.statements.CreateTableStatement
 
 trait CodeGenerator {
   def caseName(name: String): String = {
@@ -27,26 +25,16 @@ trait CodeGenerator {
   }
 }
 
-object CodeGenerator {
-
-  def pkgdir(pkg: String): String = {
-    val regex = "\\.".r
-    val pkgpath = regex.replaceAllIn(pkg, "/")
-    val pkgdir = s"out/src/main/scala/${pkgpath}"
-    new File(s"${pkgdir}").mkdirs()
-    pkgdir
-  }
-
-  def apply(filepath: String, pkg: String): Unit = {
-
-    var ks = Statements.keyspaces(filepath).next().keyspace()
-    var pdir = pkgdir(pkg)
-    CaseCode(pkg, Statements.tables(filepath), pdir)
-    DbCode(ks, Statements.tables(filepath), pkg, pdir)
-    DbDirectives(ks, pkg, Statements.tables(filepath), pdir)
-    RouterCode(ks, pkg, Statements.tables(filepath), pdir)
-    SbtCode(ks, pkg)
-    TableCode(Statements.tables(filepath), pkg, pdir)
+object CodeGenerator extends Config {
+  def apply(): Unit = {
+    var ks = Statements.keyspaces().next().keyspace()
+    CaseCode(Statements.tables())
+    DbCode(ks, Statements.tables())
+    DbDirectives(ks, Statements.tables())
+    RouterCode(ks, Statements.tables())
+    SbtCode(ks)
+    TableCode(Statements.tables())
+    MainCode()
   }
 }
 

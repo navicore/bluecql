@@ -18,28 +18,29 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object RouterCode extends CodeGenerator {
+object RouterCode extends CodeGenerator with Config {
 
-  def apply(keyspace: String, pkg: String, statements: Iterator[CreateTableStatement.RawStatement], pdir: String): Unit = {
+  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     var routes = ""
     for (stmt <- statements) {
       val tname = stmt.columnFamily()
       val cname = caseName(tname)
       routes = routes +
-s"""
-          path("${tname}" / Segment) { (id) =>
+s"""path("${tname}" / Segment) { (id) =>
             complete("ok")
           } ~
           path("${tname}") {
             complete("ok")
           } ~
 """.stripMargin
-      routes = routes.substring(0, routes.length() - 2) // chomp last ~
+      routes = routes.substring(0, routes.length() - 1) // chomp lf ~
     }
+    routes = routes.substring(0, routes.length() - 1) // chomp last ~
     val code =
-      s"""package $pkg
+      s"""package ${property(PACKAGE_PROP)}
 
 import akka.actor.Actor
 import spray.http.MediaTypes
@@ -52,9 +53,10 @@ class ServiceActor() extends Actor with Route {
 
 trait Route extends HttpService with DbDirectives {
   val route = {
-    pathPrefix(s"$keyspace") {
+    pathPrefix("$keyspace") {
       respondWithMediaType(MediaTypes.`application/json`) {
-        get {${routes}
+        get {
+          ${routes}
         }
       }
     }

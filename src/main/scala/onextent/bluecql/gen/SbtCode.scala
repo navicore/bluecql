@@ -18,19 +18,20 @@ package onextent.bluecql.gen
 
 import java.io.{File, PrintWriter}
 
+import onextent.bluecql.Config
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
-object SbtCode {
+object SbtCode extends Config {
 
-  def apply(keyspace: String, pkg: String): Unit = {
-    applySbt(keyspace, pkg)
+  def apply(keyspace: String): Unit = {
+    applySbt(keyspace, property(PACKAGE_PROP))
     applyPlugins()
     applyAssembly()
   }
 
   def applyAssembly(): Unit = {
-    val dir = new File(s"out/project/").mkdirs()
-    val file = "out/project/assembly.sbt"
+    val dir = new File(s"${property(OUT_DIR_PROP)}/project/").mkdirs()
+    val file = s"${property(OUT_DIR_PROP)}/project/assembly.sbt"
     val code =
 """addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.3")
 """.stripMargin
@@ -38,8 +39,8 @@ object SbtCode {
   }
 
   def applyPlugins(): Unit = {
-    val dir = new File(s"out/project/").mkdirs()
-    val file = "out/project/plugins.sbt"
+    val dir = new File(s"${property(OUT_DIR_PROP)}/project/").mkdirs()
+    val file = s"${property(OUT_DIR_PROP)}/project/plugins.sbt"
     val code =
 """addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.8.0")
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
@@ -48,7 +49,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
   }
 
   def applySbt(keyspace: String, pkg: String): Unit = {
-    val root = s"out/"
+    val root = s"${property(OUT_DIR_PROP)}/"
     val file = s"${root}/build.sbt"
     val code = s"""scalaVersion := "2.10.6"
 val akka = "2.3.15"

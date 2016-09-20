@@ -16,12 +16,13 @@
 
 package onextent.bluecql.cql
 
+import onextent.bluecql.Config
 import org.antlr.runtime.{ANTLRFileStream, CommonTokenStream}
 import org.apache.cassandra.cql3.statements.{CreateKeyspaceStatement, CreateTableStatement, CreateTypeStatement, ParsedStatement}
 import org.apache.cassandra.cql3.{CqlLexer, CqlParser}
 
-class Statements(filepath: String) extends Iterator[ParsedStatement] {
-  private val fileStream = new ANTLRFileStream(filepath, "utf8")
+class Statements() extends Iterator[ParsedStatement] with Config {
+  private val fileStream = new ANTLRFileStream(property(FILE_PROP), "utf8")
   private val lexer = new CqlLexer(fileStream)
   private val token = new CommonTokenStream(lexer)
   private val parser = new CqlParser(token)
@@ -35,20 +36,20 @@ class Statements(filepath: String) extends Iterator[ParsedStatement] {
 }
 
 object Statements {
-  def apply(filepath: String, classname: String): Iterator[ParsedStatement] = {
+  def apply(classname: String): Iterator[ParsedStatement] = {
     for {
-      stmt <- new Statements(filepath)
+      stmt <- new Statements()
       if stmt.getClass().getName.matches(s".*$classname")
     }  yield stmt
   }
-  def keyspaces(filepath: String): Iterator[CreateKeyspaceStatement] = {
-    apply(filepath, "CreateKeyspaceStatement").map(t => t.asInstanceOf[CreateKeyspaceStatement])
+  def keyspaces(): Iterator[CreateKeyspaceStatement] = {
+    apply("CreateKeyspaceStatement").map(t => t.asInstanceOf[CreateKeyspaceStatement])
   }
-  def types(filepath: String): Iterator[CreateTypeStatement] = {
-    apply(filepath, "CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
+  def types(): Iterator[CreateTypeStatement] = {
+    apply("CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
   }
-  def tables(filepath: String): Iterator[CreateTableStatement.RawStatement] = {
-    apply(filepath, "CreateTableStatement\\$RawStatement").map(t => t.asInstanceOf[CreateTableStatement.RawStatement])
+  def tables(): Iterator[CreateTableStatement.RawStatement] = {
+    apply("CreateTableStatement\\$RawStatement").map(t => t.asInstanceOf[CreateTableStatement.RawStatement])
   }
 }
 

@@ -23,17 +23,23 @@ import org.apache.log4j.BasicConfigurator
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 
-object Main extends App {
+object Main extends App with Config {
 
   BasicConfigurator.configure()
   val logger = LoggerFactory.getLogger(Main.getClass.getName)
 
   object Args extends ScallopConf(args) {
+    val outdir = opt[String]("out", descr = "output root directory", required = false, default = Some("./out"))
     val file = opt[String]("file", descr = "CQL input file", required = true)
     val pkg = opt[String]("package", descr = "the name of the Scala package to generate", required = true)
   }
+
   Args.verify()
 
-  CodeGenerator(Args.file(), Args.pkg())
+  property(OUT_DIR_PROP, Args.outdir())
+  property(FILE_PROP, Args.file())
+  property(PACKAGE_PROP, Args.pkg())
+
+  CodeGenerator()
 }
 
