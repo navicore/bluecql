@@ -32,12 +32,12 @@ object CodeGenerator extends Config {
   def apply(): Unit = {
     var ks = Statements.keyspaces().next().keyspace()
     CaseCode()
-    DbCode(ks, Statements.tables())
+    TableCode(Statements.tables())
     DbDirectives(ks, Statements.tables())
     RouterCode(ks, Statements.tables())
-    SbtCode(ks)
-    TableCode(Statements.tables())
+    DbCode(ks, Statements.tables())
     MainCode()
+    SbtCode(ks)
   }
 }
 

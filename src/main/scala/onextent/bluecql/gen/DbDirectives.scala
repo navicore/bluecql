@@ -50,10 +50,8 @@ s"""
 import spray.routing._
 import spray.json._
 import scala.concurrent.duration._
-import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.io.Source
-import scala.util.{Failure, Success}
+import ${property(PACKAGE_PROP)}.store._
 
 trait DbDirectives extends HttpService {
 

@@ -37,8 +37,8 @@ s"""
     val code =
 s"""package ${property(PACKAGE_PROP)}
 
-import scala.concurrent.Future
 import com.websudos.phantom.dsl._
+import ${property(PACKAGE_PROP)}.store._
 
 object Defaults {
   val keyspace = sys.env.get("KEYSPACE").getOrElse("$keyspace")

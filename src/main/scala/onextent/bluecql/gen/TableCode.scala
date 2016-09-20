@@ -16,7 +16,7 @@
 
 package onextent.bluecql.gen
 
-import java.io.PrintWriter
+import java.io.{File, PrintWriter}
 
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
@@ -24,7 +24,9 @@ object TableCode extends CodeGenerator {
 
   def apply(statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
     for (stmt <- statements) {
-      val file = s"${pdir()}/Db${stmt.columnFamily()}.scala"
+      val sloc = pdir() + "/store"
+      val sdir = new File(sloc).mkdirs()
+      val file = s"${sloc}/Db${stmt.columnFamily()}.scala"
       val code = applyStmt(property(PACKAGE_PROP), stmt)
       new PrintWriter(file) { write(s"$code\n"); close }
     }
@@ -32,10 +34,11 @@ object TableCode extends CodeGenerator {
   def applyStmt(pkg: String, stmt: CreateTableStatement.RawStatement): String = {
     val tname = stmt.columnFamily()
     val cname = caseName(tname)
-    val code =s"""package $pkg
+    val code =s"""package ${pkg}.store
 
 import scala.concurrent.Future
 import com.websudos.phantom.dsl._
+import ${property(PACKAGE_PROP)}._
 
 class Db${stmt.columnFamily()} extends CassandraTable[${stmt.columnFamily()}, ${cname}] {
 
