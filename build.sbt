@@ -44,3 +44,8 @@ lazy val testScalastyle = taskKey[Unit]("testScalastyle")
 testScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Test).toTask("").value
 (test in Test) <<= (test in Test) dependsOn testScalastyle
 
+// antlr
+antlr4Settings
+
+antlr4PackageName in Antlr4 := Some("com.onextent.bluecql.antlr4")
+
