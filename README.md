@@ -36,4 +36,7 @@ docker run -p 9042:9042 --name dse -d luketillman/datastax-enterprise:5.0.1
 ```
 docker exec -it some-dse cqlsh "-e describe keyspaces;"
 ```
+--------------
+
+*Credit for the antlr4 grammar file to [Stuart Gunter](https://github.com/stuartgunter/cql-grammar).*
 
