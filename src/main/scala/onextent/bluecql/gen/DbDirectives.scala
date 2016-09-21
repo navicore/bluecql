@@ -18,11 +18,13 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
-import org.apache.cassandra.cql3.statements.CreateTableStatement
+import onextent.bluecql.cql.Statements
 
 object DbDirectives extends CodeGenerator {
 
-  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
+  def apply(keyspace: String): Unit = {
+
+    val statements = Statements.tables()
     var accessors = ""
     for (stmt <- statements) {
       val tname = stmt.columnFamily()

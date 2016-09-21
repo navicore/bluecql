@@ -29,3 +29,11 @@ Resulting generated server code is written in Scala and uses [spray-io](http://s
 sbt "run-main onextent.bluecql.Main --file tmp/iot.cql --package onextent.my.iot" && cd out && sbt test && cd ..
 ```
 
+some nice cassandra dev commands
+```
+docker run -p 9042:9042 --name dse -d luketillman/datastax-enterprise:5.0.1
+```
+```
+docker exec -it some-dse cqlsh "-e describe keyspaces;"
+```
+

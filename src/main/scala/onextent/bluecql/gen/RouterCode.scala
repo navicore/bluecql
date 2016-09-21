@@ -18,11 +18,13 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.cql.Statements
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
 object RouterCode extends CodeGenerator {
 
-  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
+  def apply(keyspace: String): Unit = {
+    val statements = Statements.tables()
     var routes = ""
     for (stmt <- statements) {
       val tname = stmt.columnFamily()
@@ -54,14 +56,21 @@ trait Route extends HttpService with DbDirectives {
     case _ => "store"
   }
   val route = {
+    path("health") {
+      get {
+        complete("{\\\"online\\\": true}")
+      }
+    } ~
     pathPrefix(pref) {
-    pathPrefix("$keyspace") {
-      respondWithMediaType(MediaTypes.`application/json`) {
-        get {
-          ${routes}
+      pathPrefix("$keyspace") {
+        logRequest("$keyspace router") {
+          respondWithMediaType(MediaTypes.`application/json`) {
+            get {
+              ${routes}
+            }
+          }
         }
       }
-    }
     }
   }
 }

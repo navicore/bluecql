@@ -20,15 +20,17 @@ import onextent.bluecql.cql.Statements
 import org.apache.cassandra.cql3.statements.{CreateKeyspaceStatement, CreateTableStatement, CreateTypeStatement}
 import org.scalatest.FlatSpec
 
-class TestCollections extends FlatSpec {
+class TestCollections extends FlatSpec with Config {
 
-  val path = getClass.getResource("/test.cql").getPath
+  val testcql = getClass.getResource("/test.cql").getPath
+  property(FILE_PROP, testcql)
+  property(PACKAGE_PROP, "onextent.bluecql.test")
   private def fixture =
     new {
-      val statements = new Statements(path)
-      val tables = Statements.tables(path)
-      val types = Statements.types(path)
-      val keyspaces = Statements.keyspaces(path)
+      val statements = new Statements()
+      val tables = Statements.tables()
+      val types = Statements.types()
+      val keyspaces = Statements.keyspaces()
     }
 
   def size(stuff: Iterator[Any]): Int = {
@@ -57,7 +59,7 @@ class TestCollections extends FlatSpec {
     val f = fixture
     for (stmt <- f.tables)
       stmt match {
-        case raw: CreateTableStatement.RawStatement => println(s"tble raw table $raw")
+        case raw: CreateTableStatement.RawStatement => println(s"table row $raw")
         case _ => println(s"tble other ${stmt}")
       }
   }

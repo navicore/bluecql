@@ -18,15 +18,15 @@ package onextent.bluecql.gen
 
 import java.io.PrintWriter
 
+import onextent.bluecql.cql.Statements
 import org.apache.cassandra.cql3.statements.CreateTableStatement
 
 object DbCode extends CodeGenerator {
 
-  def apply(keyspace: String, statements: Iterator[CreateTableStatement.RawStatement]): Unit = {
-
+  def apply(keyspace: String): Unit = {
+    val statements: Iterator[CreateTableStatement.RawStatement] = Statements.tables()
     val file = s"${pdir()}/Db.scala"
     var objCode = ""
-
     for (stmt <- statements) {
       objCode = objCode +
 s"""

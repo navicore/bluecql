@@ -16,7 +16,8 @@ libraryDependencies ++=
     Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5",
       "log4j" % "log4j" % "1.2.17",
-      "org.apache.cassandra" % "cassandra-all" % "2.2.1",
+      //"org.apache.cassandra" % "cassandra-all" % "2.2.1",
+      "org.apache.cassandra" % "cassandra-all" % "3.7",
       "org.rogach" %% "scallop" % "2.0.1",  //Option parser
       // -- testing --
       "org.scalatest" %% "scalatest" % "2.2.1" % "test"

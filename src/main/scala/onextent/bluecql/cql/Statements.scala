@@ -43,7 +43,15 @@ object Statements {
     }  yield stmt
   }
   def keyspaces(): Iterator[CreateKeyspaceStatement] = {
-    apply("CreateKeyspaceStatement").map(t => t.asInstanceOf[CreateKeyspaceStatement])
+    apply("CreateKeyspaceStatement").map(_.asInstanceOf[CreateKeyspaceStatement])
+    /*
+    apply("CreateKeyspaceStatement").map(t => {
+      val ks = t.asInstanceOf[CreateKeyspaceStatement]
+      println("prepare ks")
+      //ks.prepare()
+      ks
+    })
+    */
   }
   def types(): Iterator[CreateTypeStatement] = {
     apply("CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
