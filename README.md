@@ -29,6 +29,13 @@ Resulting generated server code is written in Scala and uses [spray-io](http://s
 sbt "run-main onextent.bluecql.Main --file tmp/iot.cql --package onextent.my.iot" && cd out && sbt test && cd ..
 ```
 
+## NOTES
+
+* intellij 2016.2 can't find the `target/scala-2.10/src_managed/main/antlr4` src folder (extremely annoying, big fail to have to edit intellij config).
+  1. go to file/projectstructure
+  2. remove the /target dir from the "exclude folder" on right
+  3. add `target/scala-2.10/src_managed/main/antlr4` 
+
 some nice cassandra dev commands
 ```
 docker run -p 9042:9042 --name dse -d luketillman/datastax-enterprise:5.0.1

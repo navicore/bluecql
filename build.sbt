@@ -46,6 +46,6 @@ testScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Test).toTask
 
 // antlr
 antlr4Settings
-
-antlr4PackageName in Antlr4 := Some("com.onextent.bluecql.antlr4")
+antlr4PackageName in Antlr4 := Some("onextent.bluecql.antlr4")
+//javaSource in Antlr4 := (javaSource in Antlr4).value / "antlr4"
 
