@@ -30,6 +30,7 @@ statement
     | alter_keyspace_stmt
     | use_stmt
     | create_table_stmt
+    | create_type_stmt
     | alter_table_stmt
     | drop_table_stmt
     | truncate_table_stmt
@@ -69,6 +70,10 @@ use_stmt
 
 create_table_stmt
     : K_CREATE (K_TABLE | K_COLUMNFAMILY) if_not_exists? table_name column_definitions (K_WITH table_options)?
+    ;
+
+create_type_stmt
+    : K_CREATE (K_TYPE | K_COLUMNFAMILY) if_not_exists? type_name column_definitions (K_WITH type_options)?
     ;
 
 alter_table_stmt
@@ -206,8 +211,22 @@ table_name
     : (keyspace_name '.')? IDENTIFIER
     ;
 
+type_name
+    : (keyspace_name '.')? IDENTIFIER
+    ;
+
 column_name
     : IDENTIFIER
+    ;
+
+type_options
+    : type_option (K_AND type_option)*
+    ;
+
+type_option
+    : property
+    | K_COMPACT K_STORAGE
+    | K_CLUSTERING K_ORDER
     ;
 
 table_options
@@ -318,6 +337,7 @@ property_value
 data_type
     : native_type
     | collection_type
+    | udt_type
     | STRING
     ;
 
@@ -346,6 +366,9 @@ collection_type
     | 'map' '<' native_type ',' native_type '>'
     ;
 
+udt_type
+    : 'frozen' '<' native_type '>'
+    ;
 
 bool
     : K_TRUE

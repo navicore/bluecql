@@ -11,6 +11,6 @@ CREATE TABLE mykeyspace.mytable (
 );
 
 CREATE TABLE mykeyspace.myothertable (
-    name text
-    amt Int
+    name text,
+    amt int
 );

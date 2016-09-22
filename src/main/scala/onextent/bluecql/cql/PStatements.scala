@@ -17,49 +17,16 @@
 package onextent.bluecql.cql
 
 import onextent.bluecql.Config
+import onextent.bluecql.antlr4.CQL3Parser.StatementsContext
 import onextent.bluecql.antlr4.{CQL3Lexer, CQL3Parser}
 import org.antlr.v4.runtime.{ANTLRFileStream, CommonTokenStream}
 import org.apache.cassandra.cql3.statements.{CreateKeyspaceStatement, CreateTableStatement, CreateTypeStatement, ParsedStatement}
 
-/*
-class PStatements() extends Iterator[ParsedStatement] with Config {
-private val fileStream = new ANTLRFileStream(property(FILE_PROP), "utf8")
-private val lexer = new CQL3Lexer(fileStream)
-private val token = new CommonTokenStream(lexer)
-private val parser = new CQL3Parser(token)
-private var nextStmt: ParsedStatement = parser.query()
-def hasNext: Boolean = nextStmt != null
-def next(): ParsedStatement = {
-  val current = nextStmt
-  nextStmt = parser.query()
-  current
-}
+object PStatements extends Config {
+  private val fileStream = new ANTLRFileStream(property(FILE_PROP), "utf8")
+  private val lexer = new CQL3Lexer(fileStream)
+  private val token = new CommonTokenStream(lexer)
+  private val parser = new CQL3Parser(token)
+  val statements: StatementsContext = parser.statements()
 }
 
-object PStatements {
-  def apply(classname: String): Iterator[ParsedStatement] = {
-    for {
-      stmt <- new PStatements()
-      if stmt.getClass().getName.matches(s".*$classname")
-    }  yield stmt
-  }
-  def keyspaces(): Iterator[CreateKeyspaceStatement] = {
-    apply("CreateKeyspaceStatement").map(_.asInstanceOf[CreateKeyspaceStatement])
-    /*
-    apply("CreateKeyspaceStatement").map(t => {
-      val ks = t.asInstanceOf[CreateKeyspaceStatement]
-      println("prepare ks")
-      //ks.prepare()
-      ks
-    })
-    */
-  }
-  def types(): Iterator[CreateTypeStatement] = {
-    apply("CreateTypeStatement").map(t => t.asInstanceOf[CreateTypeStatement])
-  }
-  def tables(): Iterator[CreateTableStatement.RawStatement] = {
-    apply("CreateTableStatement\\$RawStatement").map(t => t.asInstanceOf[CreateTableStatement.RawStatement])
-  }
-}
-
- */

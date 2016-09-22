@@ -55,11 +55,25 @@ class TestCollections extends FlatSpec with Config {
       }
   }
 
+  it should "get separate each parsed type stmt" in {
+    val f = fixture
+    for (stmt <- f.types)
+      stmt match {
+        case raw: CreateTypeStatement => {
+          println(s"type row $raw")
+          //println(s" ejs type: ${raw.createType()}")
+        }
+        case _ => println(s"tble other ${stmt}")
+      }
+  }
   it should "get separate each parsed table stmt" in {
     val f = fixture
     for (stmt <- f.tables)
       stmt match {
-        case raw: CreateTableStatement.RawStatement => println(s"table row $raw")
+        case raw: CreateTableStatement.RawStatement => {
+          println(s"table row $raw")
+          println(s" ejs cf: ${raw.columnFamily()}")
+        }
         case _ => println(s"tble other ${stmt}")
       }
   }
