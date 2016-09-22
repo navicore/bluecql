@@ -211,6 +211,10 @@ table_name
     : (keyspace_name '.')? IDENTIFIER
     ;
 
+type_ref
+    : IDENTIFIER
+    ;
+
 type_name
     : (keyspace_name '.')? IDENTIFIER
     ;
@@ -236,6 +240,8 @@ table_options
 table_option
     : property
     | K_COMPACT K_STORAGE
+    | K_CLUSTERING K_ORDER K_BY '(' IDENTIFIER 'DESC)'
+    | K_CLUSTERING K_ORDER K_BY '(' IDENTIFIER 'ASC)'
     | K_CLUSTERING K_ORDER
     ;
 
@@ -362,12 +368,14 @@ native_type
 
 collection_type
     : 'list' '<' native_type '>'
+    | 'list' '<' data_type '>'
     | 'set' '<' native_type '>'
     | 'map' '<' native_type ',' native_type '>'
     ;
 
 udt_type
-    : 'frozen' '<' native_type '>'
+    : 'frozen' '<' type_ref '>'
+    | 'frozen' '<' data_type '>'
     ;
 
 bool
@@ -376,6 +384,7 @@ bool
     ;
 
 
+K_BY:           B Y;
 K_ADD:          A D D;
 K_ALTER:        A L T E R;
 K_AND:          A N D;
