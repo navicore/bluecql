@@ -7,10 +7,14 @@ CREATE TYPE mykeyspace.mygeo (
 
 CREATE TABLE mykeyspace.mytable (
     name text,
-    loc frozen<mygeo>
+    loc frozen<mygeo>,
+    PRIMARY KEY (name)
 );
 
 CREATE TABLE mykeyspace.myothertable (
+    id int,
     name text,
-    amt int
+    amt int,
+    PRIMARY KEY (id)
 );
+

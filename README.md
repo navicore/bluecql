@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/navicore/bluecql.svg?branch=master)](https://travis-ci.org/navicore/bluecql)
+
 # BlueCQL
 
 A tool to generate an HTTP REST server from Cassandra CQL statements.

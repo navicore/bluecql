@@ -52,8 +52,8 @@ class TestParser extends FlatSpec with Config {
           println("ejs got table name " + o.table_name().getText())
           for (i <- 0 to o.column_definitions().column_definition().size() - 1) {
             println("  ejs table ******************* " + o.column_definitions().column_definition(i).getClass.getName)
-            println("  ejs cn " + o.column_definitions().column_definition(i).column_name.getText)
-            println("  ejs cn " + o.column_definitions().column_definition(i).column_type().getText)
+            //println("  ejs cn " + o.column_definitions().column_definition(i).column_name.getText)
+            //println("  ejs cn " + o.column_definitions().column_definition(i).column_type().getText)
           }
         }
         case _ => println("ejs got others")
