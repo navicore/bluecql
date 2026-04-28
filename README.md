@@ -1,3 +1,8 @@
+<!-- ghmig:moved -->
+> **This repository has moved to [https://git.navicore.tech/navicore/bluecql](https://git.navicore.tech/navicore/bluecql).**
+>
+> The GitHub copy is archived and no longer maintained.
+
 [![Build Status](https://travis-ci.org/navicore/bluecql.svg?branch=master)](https://travis-ci.org/navicore/bluecql)
 
 # BlueCQL
@@ -48,4 +53,3 @@ docker exec -it some-dse cqlsh "-e describe keyspaces;"
 --------------
 
 *Credit for the antlr4 grammar file to [Stuart Gunter](https://github.com/stuartgunter/cql-grammar).*
-
